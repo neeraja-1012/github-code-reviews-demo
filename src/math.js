@@ -18,5 +18,5 @@ export function divide(a, b) {
   return a / b;
 }
 
-const unusedVariable = 42;
+
 
