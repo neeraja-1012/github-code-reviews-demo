@@ -1,5 +1,17 @@
 language: en-US
 reviews:
+  profile: chill # concise, friendly tone (alt: "assertive")
+  high_level_summary: true
+  review_status: true
+  request_changes_workflow: false
+  poem: false
+  auto_review:
+    enabled: true # review every new PR automatically
+    drafts: false
+chat:
+  auto_reply: true # lets you @coderabbitai in comments
+language: en-US
+reviews:
   profile: chill
   high_level_summary: true
   review_status: true

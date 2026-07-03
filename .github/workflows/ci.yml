@@ -1,5 +1,57 @@
 name: CI
 
+# WHEN to run: every PR, and pushes to main.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  # JOB 1 — the pass/fail gate. This is the check you make "required".
+  test:
+    name: Lint, format & test # <-- remember this exact name for branch protection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies (clean, reproducible)
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Check formatting
+        run: npm run format:check
+      - name: Run tests
+        run: npm test
+
+  # JOB 2 — inline lint comments via Reviewdog. Only on pull requests.
+  review:
+    name: Inline ESLint review (Reviewdog)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # required so Reviewdog can post comments
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Reviewdog + ESLint
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review # inline comments on the PR diff
+          eslint_flags: '.'
+          fail_level: none # comment, but don't fail the job on findings
+name: CI
+
 on:
   pull_request:
   push:
